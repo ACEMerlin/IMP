@@ -1,24 +1,53 @@
 type var = string
 
-type exp =
-    Int of int
+type aexp =
+  | Int of int
   | Var of var
-  | Plus of exp * exp
-  | Times of exp * exp
-  | Assign of var * exp * exp
+  | Plus of aexp * aexp
+  | Times of aexp * aexp
 
-let rec strExp e = 
+type bexp =
+  | True
+  | False
+  | Less of aexp * aexp
+
+type com =
+  | Seq of com * com
+  | Assign of var * aexp
+  | Aexp of aexp
+  | If of bexp * com * com
+  | While of bexp * com
+
+let rec str_aexp e = 
   match e with
     | Int m -> 
       string_of_int m
     | Var x -> 
       x
-    | Plus(e1,e2) -> 
-      "(" ^   strExp(e1) ^ "+" ^ strExp(e2) ^ ")"
-    | Times(e1,e2) -> 
-      "(" ^   strExp(e1) ^ "*" ^ strExp(e2) ^ ")"
-    | Assign(x,e1,e2) -> 
-      "(" ^ x ^ ":=" ^ strExp e1 ^ ";" ^ strExp e2 ^ ")"
+    | Plus(a1,a2) -> 
+      "(" ^ str_aexp a1 ^ "+" ^ str_aexp a2 ^ ")"
+    | Times(a1,a2) -> 
+      "(" ^ str_aexp a1 ^ "*" ^ str_aexp a2 ^ ")"
+
+let rec str_bexp e =
+  match e with
+    | True -> "ture"
+    | False -> "false"
+    | Less(a1,a2) ->
+      "(" ^ str_aexp a1 ^ "<" ^ str_aexp a2 ^ ")"
+
+let rec str_com e =
+  match e with
+    | Assign(x,a1) -> 
+      "(" ^ x ^ ":=" ^ str_aexp a1 ^ ")"
+    | Seq(c1,c2) ->
+      "(" ^ str_com c1 ^ ";" ^ str_com c2 ^ ")"
+    | Aexp a1 ->
+      str_aexp a1
+    | If(b1,c1,c2) ->
+      "(if" ^ str_bexp b1 ^ "then" ^ str_com c1 ^ "else" ^ str_com c2 ^ ")"
+    | While(b1,c1) ->
+      "(while" ^ str_bexp b1 ^ "do" ^ str_com c1 ^ ")"
 
 module S = 
   Set.Make(struct 

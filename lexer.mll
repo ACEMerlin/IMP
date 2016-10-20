@@ -24,6 +24,16 @@ rule token = parse
 | ")"     { RPAREN }
 | ":="    { ASSIGN }
 | ";"     { SEMI }
+| "<"     { LESS }
+| "false" { FALSE }
+| "true"  { TRUE }
+| "if"    { IF }
+| "else"  { ELSE }
+| "then"  { THEN }
+| "while" { WHILE }
+| "do"    { DO }
+| "{"     { LB }
+| "}"     { RB }
 | id as v { VAR(v) }
 | digit+ as n { INT(int_of_string n) }
 | eof     { EOF }
